@@ -1,8 +1,7 @@
-import { ipcMain } from 'electron'
-import OpenAI from 'openai'
+import { app, ipcMain } from 'electron'
 import * as fs from 'fs'
+import OpenAI from 'openai'
 import * as path from 'path'
-import { app } from 'electron'
 
 // 配置文件路径
 const CONFIG_PATH = path.join(app.getPath('userData'), 'chat-config.json')
@@ -42,7 +41,8 @@ let openaiInstance: OpenAI | null = null
 function initOpenAI(apiKey: string) {
   openaiInstance = new OpenAI({
     baseURL: 'https://api.deepseek.com',
-    apiKey: apiKey
+    apiKey: apiKey,
+    dangerouslyAllowBrowser: true
   })
 }
 
