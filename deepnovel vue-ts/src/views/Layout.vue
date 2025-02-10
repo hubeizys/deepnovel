@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  ChatDotRound,
   DocumentCopy,
   Edit,
   HomeFilled,
@@ -34,6 +35,10 @@ const router = useRouter()
         <el-menu-item index="/scene">
           <el-icon><Edit /></el-icon>
           <span>场景生成</span>
+        </el-menu-item>
+        <el-menu-item index="/chat">
+          <el-icon><ChatDotRound /></el-icon>
+          <span>AI 助手</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
