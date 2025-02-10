@@ -36,10 +36,43 @@
           <div class="message-header">
             <span class="role">{{ message.role === 'user' ? '你' : 'AI' }}</span>
             <span class="time">{{ formatTime(message.timestamp) }}</span>
+            <span v-if="message.metadata?.confidence" class="confidence">
+              可信度: {{ (message.metadata.confidence * 100).toFixed(0) }}%
+            </span>
           </div>
-          <div class="message-text">{{ message.content }}</div>
+          
+          <!-- 文本消息 -->
+          <div v-if="!message.type || message.type === 'text'" class="message-text">
+            {{ message.content }}
+          </div>
+
+          <!-- 代码消息 -->
+          <pre v-else-if="message.type === 'code'" class="message-code">
+            <code>{{ message.content }}</code>
+          </pre>
+
+          <!-- 建议消息 -->
+          <div v-else-if="message.type === 'suggestion'" class="message-suggestion">
+            <div class="suggestion-content">{{ message.content }}</div>
+            <div v-if="message.metadata?.sources?.length" class="suggestion-sources">
+              <div class="sources-title">参考来源:</div>
+              <ul>
+                <li v-for="(source, idx) in message.metadata.sources" :key="idx">
+                  {{ source }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 标签 -->
+          <div v-if="message.metadata?.tags?.length" class="message-tags">
+            <span v-for="(tag, idx) in message.metadata.tags" :key="idx" class="tag">
+              {{ tag }}
+            </span>
+          </div>
         </div>
       </div>
+      
       <div v-if="loading" class="loading">
         <div class="typing-indicator">
           <span></span>
@@ -67,11 +100,13 @@
 import { ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
 import { useChatApiStore } from '../stores/chatApi'
+import type { ChatResponse } from '../types/chatResponse'
 const apiKey = ref('')
 const temperature = ref(1.3)
 const showSettings = ref(false)
 const currentMessage = ref('')
-const messages = ref<Array<{role: string, content: string, timestamp: number}>>([])
+const messages = ref<Array<{role: string, content: string, timestamp: number, type?: string, 
+  metadata?: {confidence: number, sources?: string[], tags?: string[]}}>>([])
 const loading = ref(false)
 const messagesContainer = ref<HTMLElement | null>(null)
 const chatApiStore = useChatApiStore()
@@ -139,11 +174,29 @@ const sendMessage = async () => {
     }))
 
     const response = await chatApiStore.sendChatMessage(messageHistory)
+    
+    // 解析 JSON 响应
+    let parsedResponse: ChatResponse
+    try {
+      parsedResponse = typeof response.content === 'string' 
+        ? JSON.parse(response.content)
+        : response.content
+    } catch (e) {
+      parsedResponse = {
+        content: response.content || '',
+        type: 'text',
+        metadata: {
+          confidence: 1
+        }
+      }
+    }
 
     messages.value.push({
       role: 'assistant',
-      content: response.content || '',
-      timestamp: Date.now()
+      content: parsedResponse.content,
+      timestamp: Date.now(),
+      type: parsedResponse.type,
+      metadata: parsedResponse.metadata
     })
   } catch (error: any) {
     ElMessage.error(error.message || '发送消息失败')
@@ -169,173 +222,58 @@ const scrollToBottom = () => {
 </script>
 
 <style scoped>
-.chat-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background-color: #f5f5f5;
-  position: relative;
-}
+/* ... existing styles ... */
 
-.chat-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.message-code {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
   padding: 1rem;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.settings-panel {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.settings-content {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-}
-
-.input-group {
-  margin: 1rem 0;
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.input-group input,
-.input-group select {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
   border-radius: 4px;
+  overflow-x: auto;
+  font-family: 'Courier New', Courier, monospace;
 }
 
-.messages-container {
-  flex: 1;
-  overflow-y: auto;
+.message-suggestion {
+  background-color: #f8f9fa;
   padding: 1rem;
-}
-
-.message {
-  margin-bottom: 1rem;
-  max-width: 80%;
-}
-
-.user-message {
-  margin-left: auto;
-}
-
-.assistant-message {
-  margin-right: auto;
-}
-
-.message-content {
-  background-color: #fff;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.user-message .message-content {
-  background-color: #007AFF;
-  color: white;
-}
-
-.message-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 0.8rem;
-  opacity: 0.8;
-}
-
-.input-container {
-  padding: 1rem;
-  background-color: #fff;
-  display: flex;
-  gap: 1rem;
-  align-items: flex-end;
-}
-
-textarea {
-  flex: 1;
-  border: 1px solid #ddd;
   border-radius: 4px;
-  padding: 0.5rem;
-  resize: none;
+  border-left: 4px solid #28a745;
 }
 
-.send-button {
-  padding: 0.5rem 1rem;
-  background-color: #007AFF;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.send-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.loading {
-  display: flex;
-  justify-content: center;
-  margin: 1rem 0;
-}
-
-.typing-indicator {
-  display: flex;
-  gap: 0.3rem;
-}
-
-.typing-indicator span {
-  width: 8px;
-  height: 8px;
-  background-color: #007AFF;
-  border-radius: 50%;
-  animation: bounce 1.4s infinite ease-in-out;
-}
-
-.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-
-@keyframes bounce {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1.0); }
-}
-
-.primary-button {
-  background-color: #007AFF;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 1rem;
-}
-
-.icon-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
+.suggestion-sources {
+  margin-top: 0.5rem;
+  font-size: 0.9em;
   color: #666;
 }
+
+.sources-title {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.message-tags {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.8em;
+}
+
+.confidence {
+  background-color: #28a745;
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.8em;
+  margin-left: 0.5rem;
+}
+
+/* ... rest of existing styles ... */
 </style> 
