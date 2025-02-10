@@ -32,9 +32,9 @@
               </el-form-item>
               <el-form-item label="世界类型">
                 <el-radio-group v-model="worldForm.basic.type">
-                  <el-radio label="fantasy">奇幻</el-radio>
-                  <el-radio label="scifi">科幻</el-radio>
-                  <el-radio label="reality">现实</el-radio>
+                  <el-radio value="fantasy">奇幻</el-radio>
+                  <el-radio value="scifi">科幻</el-radio>
+                  <el-radio value="reality">现实</el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-form>
