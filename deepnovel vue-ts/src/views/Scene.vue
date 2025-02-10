@@ -12,9 +12,9 @@
           <el-form :model="sceneForm" label-width="120px">
             <el-form-item label="场景类型">
               <el-radio-group v-model="sceneForm.type">
-                <el-radio label="description">环境描写</el-radio>
-                <el-radio label="dialogue">对话场景</el-radio>
-                <el-radio label="action">动作场景</el-radio>
+                <el-radio value="description">环境描写</el-radio>
+                <el-radio value="dialogue">对话场景</el-radio>
+                <el-radio value="action">动作场景</el-radio>
               </el-radio-group>
             </el-form-item>
 

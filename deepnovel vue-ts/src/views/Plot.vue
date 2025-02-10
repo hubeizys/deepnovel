@@ -55,9 +55,9 @@
 
             <el-form-item label="结局倾向">
               <el-radio-group v-model="plotForm.ending">
-                <el-radio label="happy">圆满结局</el-radio>
-                <el-radio label="tragic">悲剧结局</el-radio>
-                <el-radio label="open">开放结局</el-radio>
+                <el-radio value="happy">圆满结局</el-radio>
+                <el-radio value="tragic">悲剧结局</el-radio>
+                <el-radio value="open">开放结局</el-radio>
               </el-radio-group>
             </el-form-item>
 
