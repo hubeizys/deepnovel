@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
 import {
-  HomeFilled,
-  UserFilled,
-  Monitor,
   DocumentCopy,
-  Edit
+  Edit,
+  HomeFilled,
+  Monitor,
+  UserFilled
 } from '@element-plus/icons-vue';
+import { useRouter } from 'vue-router';
 
 const router = useRouter()
 </script>
 
 <template>
   <el-container class="layout-container">
-    <el-aside width="200px">
+    <el-aside width="200px" class="enum-aside">
       <el-menu :router="true" class="el-menu-vertical" :default-active="router.currentRoute.value.path">
         <el-menu-item index="/">
           <el-icon><HomeFilled /></el-icon>
@@ -54,6 +54,18 @@ const router = useRouter()
 .layout-container {
   height: 100vh;
   background-color: var(--bg-secondary);
+
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.enum-aside {
+  margin-right:2em !important; 
+
 }
 
 .el-aside {

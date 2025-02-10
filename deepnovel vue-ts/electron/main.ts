@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from 'electron'
 import { createRequire } from 'node:module'
-import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -28,10 +28,17 @@ let win: BrowserWindow | null
 
 function createWindow() {
   win = new BrowserWindow({
+    width: 1280,          // 设置窗口宽度
+    height: 800,         // 设置窗口高度
+    maxWidth: 1920,         // 最大宽度
+    maxHeight: 1080,        // 最大高度
+    resizable: true,        // 是否可调整大小
+    fullscreen: false,       // 是否全屏
     icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
     },
+
   })
 
   // Test active push message to Renderer-process.
