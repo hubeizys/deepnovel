@@ -4,8 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build && electron-builder",
+    "dev:electron": "vite --mode electron",
+    "dev:web": "vite --mode web",
+    "build:electron": "vue-tsc && vite build --mode electron && electron-builder",
+    "build:web": "vue-tsc && vite build --mode web",
     "preview": "vite preview",
     "server": "node dist-electron/server/main.js"
   },
