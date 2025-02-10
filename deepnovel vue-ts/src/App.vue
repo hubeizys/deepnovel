@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElConfigProvider } from 'element-plus';
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'; /* PartiallyEnd: #3632/scriptSetup.vue */
-import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
+
 </script>
 
 <template>
