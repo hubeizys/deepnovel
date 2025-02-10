@@ -65,8 +65,8 @@
 
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
-import { onMounted, ref, watch } from 'vue'
-
+import { onMounted, ref } from 'vue'
+import { useChatApiStore } from '../stores/chatApi'
 const apiKey = ref('')
 const temperature = ref(1.3)
 const showSettings = ref(false)
@@ -74,8 +74,9 @@ const currentMessage = ref('')
 const messages = ref<Array<{role: string, content: string, timestamp: number}>>([])
 const loading = ref(false)
 const messagesContainer = ref<HTMLElement | null>(null)
+const chatApiStore = useChatApiStore()
 
-// 从主进程加载设置和历史记录
+// 从localStorage加载设置和历史记录
 onMounted(async () => {
   try {
     const savedMessages = localStorage.getItem('chat_history')
@@ -83,18 +84,13 @@ onMounted(async () => {
       messages.value = JSON.parse(savedMessages)
     }
     
-    const settings = await window.ipcRenderer.invoke('get-chat-settings')
-    apiKey.value = settings.apiKey
-    temperature.value = settings.temperature
+    chatApiStore.loadSettings()
+    apiKey.value = chatApiStore.apiKey
+    temperature.value = chatApiStore.temperature
   } catch (error) {
     console.error('Failed to load settings:', error)
   }
 })
-
-// 监听消息变化，保存到localStorage
-watch(messages, (newMessages) => {
-  localStorage.setItem('chat_history', JSON.stringify(newMessages))
-}, { deep: true })
 
 // 保存设置
 const saveSettings = async () => {
@@ -104,17 +100,13 @@ const saveSettings = async () => {
   }
   
   try {
-    const success = await window.ipcRenderer.invoke('save-chat-settings', {
+    chatApiStore.saveSettings({
       apiKey: apiKey.value,
       temperature: temperature.value
     })
     
-    if (success) {
-      showSettings.value = false
-      ElMessage.success('设置已保存')
-    } else {
-      ElMessage.error('保存设置失败')
-    }
+    showSettings.value = false
+    ElMessage.success('设置已保存')
   } catch (error: any) {
     ElMessage.error(error.message || '保存设置失败')
   }
@@ -146,10 +138,7 @@ const sendMessage = async () => {
       content: m.content
     }))
 
-    const response = await window.ipcRenderer.invoke('send-chat-message', {
-      messages: messageHistory,
-      temperature: temperature.value
-    })
+    const response = await chatApiStore.sendChatMessage(messageHistory)
 
     messages.value.push({
       role: 'assistant',
@@ -162,7 +151,7 @@ const sendMessage = async () => {
     loading.value = false
     scrollToBottom()
   }
-}
+} 
 
 // 格式化时间
 const formatTime = (timestamp: number) => {
