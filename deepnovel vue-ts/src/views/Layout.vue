@@ -1,25 +1,34 @@
+<script setup lang="ts">
+import { useRouter } from 'vue-router';
+import {
+  HomeFilled,
+  UserFilled,
+  Monitor,
+  DocumentCopy,
+  Edit
+} from '@element-plus/icons-vue';
+
+const router = useRouter()
+</script>
+
 <template>
   <el-container class="layout-container">
     <el-aside width="200px">
-      <el-menu
-        :router="true"
-        class="el-menu-vertical"
-        :default-active="route.path"
-      >
+      <el-menu :router="true" class="el-menu-vertical" :default-active="router.currentRoute.value.path">
         <el-menu-item index="/">
-          <el-icon><House /></el-icon>
+          <el-icon><HomeFilled /></el-icon>
           <span>首页</span>
         </el-menu-item>
         <el-menu-item index="/character">
-          <el-icon><User /></el-icon>
+          <el-icon><UserFilled /></el-icon>
           <span>角色生成器</span>
         </el-menu-item>
         <el-menu-item index="/world">
-          <el-icon><Globe /></el-icon>
+          <el-icon><Monitor /></el-icon>
           <span>世界观构建</span>
         </el-menu-item>
         <el-menu-item index="/plot">
-          <el-icon><Files /></el-icon>
+          <el-icon><DocumentCopy /></el-icon>
           <span>情节大纲</span>
         </el-menu-item>
         <el-menu-item index="/scene">
@@ -40,13 +49,6 @@
     </el-container>
   </el-container>
 </template>
-
-<script setup lang="ts">
-import { Edit, Files, Globe, House, User } from '@element-plus/icons-vue';
-import { useRoute } from 'vue-router';
-
-const route = useRoute()
-</script>
 
 <style scoped>
 .layout-container {
@@ -82,4 +84,4 @@ const route = useRoute()
   background-color: #f0f2f5;
   padding: 20px;
 }
-</style> 
+</style>

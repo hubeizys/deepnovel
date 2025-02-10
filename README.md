@@ -19,21 +19,34 @@ If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has a
 
 
 # 使用方法：
-开发 Web 版本时使用：npm run dev:web
-开发 Electron 版本时使用：npm run dev:electron
-构建时分别使用对应的构建命令
-注意事项：
-源代码中如果有使用 Electron 特有的 API，建议使用条件判断：
+1. 开发 Web 版本时使用：npm run dev:web
+2. 开发 Electron 版本时使用：npm run dev:electron
+3. 构建时分别使用对应的构建命令
+4. 注意事项：
+   源代码中如果有使用 Electron 特有的 API，建议使用条件判断：
 
+   ```javascript
    const isElectron = window.electron !== undefined
    if (isElectron) {
      // Electron 特有的代码
    } else {
      // Web 版本的替代实现
    }
+   ```
+
 # 构建命令：
-开发 Web 版本时使用：npm run build:web
-开发 Electron 版本时使用：npm run build:electron
+
+1. 开发 Web 版本时使用：npm run build:web
+2. 开发 Electron 版本时使用：npm run build:electron
+
+
+# 运行命令：
+
+1. 开发 Web 版本时使用：npm run server
+2. 开发 Electron 版本时使用：npm run server:electron
+
+
+
 
 
 

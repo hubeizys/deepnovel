@@ -1,29 +1,7 @@
-<template>
-  <div class="home-container">
-    <el-row :gutter="20">
-      <el-col :span="8" v-for="(feature, index) in features" :key="index">
-        <el-card class="feature-card" :body-style="{ padding: '20px' }">
-          <div class="feature-icon">
-            <el-icon :size="40" :color="feature.color">
-              <component :is="feature.icon" />
-            </el-icon>
-          </div>
-          <h3>{{ feature.title }}</h3>
-          <p>{{ feature.description }}</p>
-          <el-button type="primary" @click="navigateTo(feature.route)">
-            开始使用
-          </el-button>
-        </el-card>
-      </el-col>
-    </el-row>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { useRouter } from 'vue-router';
-
+<script lang="ts" setup>
+import { useRouter } from 'vue-router'
+import { UserFilled, Monitor, DocumentCopy, Edit } from '@element-plus/icons-vue'
 const router = useRouter()
-
 const features = [
   {
     title: '角色生成器',
@@ -53,36 +31,51 @@ const features = [
     color: '#F56C6C',
     route: '/scene'
   }
-]
+]</script>
 
-const navigateTo = (route: string) => {
-  router.push(route)
-}
-</script>
+<template>
+  <div class="home-container">
+    <el-row :gutter="20">
+      <el-col v-for="(f,i) in features" :key="i" :span="6">
+        <el-card class="feature-card">
+          <div class="feature-icon">
+            <component 
+              :is="f.icon === 'User' ? UserFilled : 
+                   f.icon === 'Globe' ? Monitor :
+                   f.icon === 'Files' ? DocumentCopy :
+                   f.icon === 'Edit' ? Edit : undefined"
+              :style="{ color: f.color, fontSize: '40px' }"
+            />
+          </div>
+          <h3>{{ f.title }}</h3>
+          <p>{{ f.description }}</p>
+          <el-button type="primary" @click="router.push(f.route)">开始使用</el-button>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
+</template>
 
 <style scoped>
 .home-container {
   padding: 20px;
 }
-
 .feature-card {
   height: 100%;
   text-align: center;
   margin-bottom: 20px;
+  padding: 20px;
 }
-
 .feature-icon {
   margin-bottom: 20px;
 }
-
 .feature-card h3 {
   margin: 10px 0;
   color: #303133;
 }
-
 .feature-card p {
   color: #606266;
   margin-bottom: 20px;
   min-height: 60px;
 }
-</style> 
+</style>
